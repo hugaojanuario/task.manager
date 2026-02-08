@@ -16,6 +16,14 @@ func CreatedTask(c *gin.Context){
 		})
 		return
 	}
+
+	if err := model.VaidationTask(&task); err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":err,
+		})
+		return
+	}
+
 	database.DB.Create(&task)
 	task.Status = model.StatusPedende
 	c.JSON(http.StatusCreated, task)
@@ -53,6 +61,14 @@ func PutTaskById(c *gin.Context){
 		})
 		return
 	}
+
+	if err := model.VaidationTask(&task); err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":err,
+		})
+		return
+	}
+
 	database.DB.Model(&task).UpdateColumns(task)
 	c.JSON(http.StatusOK, task)
 }
@@ -66,3 +82,4 @@ func DeleteById(c *gin.Context){
 	database.DB.Delete(&task)
 	c.JSON(http.StatusOK, task)
 }
+

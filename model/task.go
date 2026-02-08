@@ -1,14 +1,22 @@
 package model
 
 import (
+	"gopkg.in/validator.v2"
 	"gorm.io/gorm"
 )
 
 type Task struct {
 	gorm.Model
-	Title       string      `json"title"`
-	Description string      `json"description"`
-	Status      TaskManager `json"status"`
+	Title       string      `json:"title" validate:"min=4,max=30,regexp=^[a-zA-Z ]+$"`
+	Description string      `json:"description" validate:"min=10,max=40,regexp=^[a-zA-Z ]+$"`
+	Status      TaskManager `json:"status"`
 }
 
 var Tasks []Task
+
+func VaidationTask(t *Task) error{
+	if err := validator.Validate(&t); err != nil {
+		return err
+	}
+	return nil
+}
