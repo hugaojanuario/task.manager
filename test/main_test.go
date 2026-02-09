@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -24,11 +24,18 @@ func TestVerifyFindTaskByIdStatusCode(t *testing.T) {
 	r := SetupTest()
 	r.GET("/task/:id", controllers.FindTaskById)
 
-	req, _ := http.NewRequest("GET", "/task/3", nil)
+	req, _ := http.NewRequest("GET", "/task/7", nil)
 	resp := httptest.NewRecorder()
 	r.ServeHTTP(resp, req)
-	assert.Equal(t, http.StatusOK, resp.Code, "error menssage: 'deveriam ser iguais'")
-	mockResponse, _ := ioutil.ReadAll(resp.Body)
-	responseBody := &model.Task{}
-	assert.Equal(t, mockResponse, responseBody)
+
+	assert.Equal(t, http.StatusOK, resp.Code)
+
+	var responseTask model.Task
+	err := json.Unmarshal(resp.Body.Bytes(), &responseTask)
+	assert.NoError(t, err)
+
+	assert.Equal(t, uint(7), responseTask.ID)
+	assert.Equal(t, "fazer", responseTask.Title)
+	assert.Equal(t, "trocar a luz", responseTask.Description)
+	assert.Equal(t, model.StatusPedende, responseTask.Status)
 }
