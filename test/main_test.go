@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,33 +9,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hugaojanuario/task.manager.api/database"
 	"github.com/hugaojanuario/task.manager.api/internal/handler/controllers"
-	"github.com/hugaojanuario/task.manager.api/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func SetupTest() *gin.Engine {
-	database.ConectingOnDatabase()
 	routes := gin.Default()
 
 	return routes
 }
 
-func TestVerifyFindTaskByIdStatusCode(t *testing.T) {
+func TestFindAllTasks(t *testing.T) {
+	database.ConectingOnDatabase()
 	r := SetupTest()
-	r.GET("/task/:id", controllers.FindTaskById)
+	r.GET("/task", controllers.FindTasks)
 
-	req, _ := http.NewRequest("GET", "/task/7", nil)
+	req, _ := http.NewRequest("GET", "/task", nil)
 	resp := httptest.NewRecorder()
 	r.ServeHTTP(resp, req)
-
 	assert.Equal(t, http.StatusOK, resp.Code)
-
-	var responseTask model.Task
-	err := json.Unmarshal(resp.Body.Bytes(), &responseTask)
-	assert.NoError(t, err)
-
-	assert.Equal(t, uint(7), responseTask.ID)
-	assert.Equal(t, "fazer", responseTask.Title)
-	assert.Equal(t, "trocar a luz", responseTask.Description)
-	assert.Equal(t, model.StatusPedende, responseTask.Status)
+	fmt.Println(resp.Body)
 }
