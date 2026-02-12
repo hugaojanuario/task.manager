@@ -63,3 +63,11 @@ func TestFindTaskByIdHandler(t *testing.T) {
 	assert.Equal(t, "tasktest", taskMock.Title)
 	assert.Equal(t, "this task is one test", taskMock.Description)
 }
+
+func TestDeleteByIdHandler(t *testing.T) {
+	database.ConectingOnDatabase()
+	CreatedMockTask()
+	defer DeleteMockTask()
+	r := SetupTest()
+	r.DELETE("task/:id", controllers.DeleteById)
+}

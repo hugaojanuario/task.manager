@@ -8,34 +8,34 @@ import (
 	"github.com/hugaojanuario/task.manager.api/model"
 )
 
-func CreatedTask(c *gin.Context){
+func CreatedTask(c *gin.Context) {
 	var task model.Task
-	if err := c.ShouldBindJSON(&task); err != nil{
+	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":err,
+			"error": err,
 		})
 		return
 	}
 
-	if err := model.VaidationTask(&task); err != nil{
+	if err := model.VaidationTask(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":err,
+			"error": err,
 		})
 		return
 	}
 
-	database.DB.Create(&task)
 	task.Status = model.StatusPedende
+	database.DB.Create(&task)
 	c.JSON(http.StatusCreated, task)
 }
 
-func FindTasks(c *gin.Context){
+func FindTasks(c *gin.Context) {
 	var tasks []model.Task
 	database.DB.Find(&tasks)
 	c.JSON(http.StatusOK, tasks)
 }
 
-func FindTaskById(c *gin.Context){
+func FindTaskById(c *gin.Context) {
 	var task model.Task
 	id := c.Params.ByName("id")
 	database.DB.First(&task, id)
@@ -50,21 +50,21 @@ func FindTaskById(c *gin.Context){
 
 }
 
-func PutTaskById(c *gin.Context){
+func PutTaskById(c *gin.Context) {
 	var task model.Task
 	id := c.Params.ByName("id")
 	database.DB.First(&task, id)
 
-	if err := c.ShouldBindJSON(&task); err != nil{
+	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":err,
+			"error": err,
 		})
 		return
 	}
 
-	if err := model.VaidationTask(&task); err != nil{
+	if err := model.VaidationTask(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":err,
+			"error": err,
 		})
 		return
 	}
@@ -73,13 +73,11 @@ func PutTaskById(c *gin.Context){
 	c.JSON(http.StatusOK, task)
 }
 
-func DeleteById(c *gin.Context){
+func DeleteById(c *gin.Context) {
 	var task model.Task
 	id := c.Params.ByName("id")
-	
 
 	database.DB.First(&task, id)
 	database.DB.Delete(&task)
 	c.JSON(http.StatusOK, task)
 }
-
