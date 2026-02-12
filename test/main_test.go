@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"path"
 	"strconv"
 	"testing"
 
@@ -54,6 +55,7 @@ func TestFindTaskByIdHandler(t *testing.T) {
 	defer DeleteMockTask()
 	r := SetupTest()
 	r.GET("/task/:id", controllers.FindTaskById)
+	
 	path := "/task/" + strconv.Itoa(ID)
 	req, _ := http.NewRequest("GET", path, nil)
 	resp := httptest.NewRecorder()
@@ -67,7 +69,13 @@ func TestFindTaskByIdHandler(t *testing.T) {
 func TestDeleteByIdHandler(t *testing.T) {
 	database.ConectingOnDatabase()
 	CreatedMockTask()
-	defer DeleteMockTask()
+	DeleteMockTask()
 	r := SetupTest()
 	r.DELETE("task/:id", controllers.DeleteById)
+
+	path := "/task/" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("DELETE", path, nil)
+	resp := httptest.NewRecorder()
+	r.ServeHTTP(resp, req)
+	assert.Equal(t, http.StatusOK, resp.Code)
 }
