@@ -11,8 +11,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hugaojanuario/task.manager.api/database"
-	"github.com/hugaojanuario/task.manager.api/internal/handler/controllers"
-	"github.com/hugaojanuario/task.manager.api/model"
+	"github.com/hugaojanuario/task.manager.api/internal/domain"
+	"github.com/hugaojanuario/task.manager.api/internal/handler"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,13 +25,13 @@ func SetupTest() *gin.Engine {
 }
 
 func CreatedMockTask() {
-	task := model.Task{Title: "tasktest", Description: "this task is one test"}
+	task := domain.Task{Title: "tasktest", Description: "this task is one test"}
 	database.DB.Create(&task)
 	ID = int(task.ID)
 }
 
 func DeleteMockTask() {
-	var task model.Task
+	var task domain.Task
 	database.DB.Delete(&task, ID)
 }
 
@@ -40,7 +40,7 @@ func TestFindAllTasks(t *testing.T) {
 	CreatedMockTask()
 	defer DeleteMockTask()
 	r := SetupTest()
-	r.GET("/task", controllers.FindAllTasks)
+	r.GET("/task", handler.FindAllTasks)
 	req, _ := http.NewRequest("GET", "/task", nil)
 	resp := httptest.NewRecorder()
 	r.ServeHTTP(resp, req)
@@ -53,12 +53,12 @@ func TestFindTaskByIdHandler(t *testing.T) {
 	CreatedMockTask()
 	defer DeleteMockTask()
 	r := SetupTest()
-	r.GET("/task/:id", controllers.FindTaskById)
+	r.GET("/task/:id", handler.FindTaskById)
 	path := "/task/" + strconv.Itoa(ID)
 	req, _ := http.NewRequest("GET", path, nil)
 	resp := httptest.NewRecorder()
 	r.ServeHTTP(resp, req)
-	var taskMock model.Task
+	var taskMock domain.Task
 	json.Unmarshal(resp.Body.Bytes(), &taskMock)
 	assert.Equal(t, "tasktest", taskMock.Title)
 	assert.Equal(t, "this task is one test", taskMock.Description)
@@ -69,7 +69,7 @@ func TestDeleteByIdHandler(t *testing.T) {
 	CreatedMockTask()
 	DeleteMockTask()
 	r := SetupTest()
-	r.DELETE("/task/:id", controllers.DeleteById)
+	r.DELETE("/task/:id", handler.DeleteById)
 	path := "/task/" + strconv.Itoa(ID)
 	req, _ := http.NewRequest("DELETE", path, nil)
 	resp := httptest.NewRecorder()
@@ -82,14 +82,14 @@ func TestPutByIdHandler(t *testing.T) {
 	CreatedMockTask()
 	defer DeleteMockTask()
 	r := SetupTest()
-	r.PUT("/task/:id", controllers.PutTaskById)
-	task := model.Task{Title: "tasktest", Description: "this task is one test2"}
+	r.PUT("/task/:id", handler.PutTaskById)
+	task := domain.Task{Title: "tasktest", Description: "this task is one test2"}
 	taskInJson, _ := json.Marshal(task)
 	path := "/task/" + strconv.Itoa(ID)
 	req, _ := http.NewRequest("PUT", path, bytes.NewBuffer(taskInJson))
 	resp := httptest.NewRecorder()
 	r.ServeHTTP(resp, req)
-	var taskMock model.Task
+	var taskMock domain.Task
 	json.Unmarshal(resp.Body.Bytes(), &taskMock)
 	assert.Equal(t, "tasktest", taskMock.Title)
 	assert.Equal(t, "this task is one test2", taskMock.Description)
