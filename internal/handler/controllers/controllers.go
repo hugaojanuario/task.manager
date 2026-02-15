@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hugaojanuario/task.manager.api/database"
+	"github.com/hugaojanuario/task.manager.api/internal/handler/service"
 	"github.com/hugaojanuario/task.manager.api/model"
 )
 
@@ -17,7 +18,7 @@ func CreatedTask(c *gin.Context) {
 		return
 	}
 
-	if err := model.VaidationTask(&task); err != nil {
+	if err := service.ValidationTask(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
 		})
@@ -29,7 +30,7 @@ func CreatedTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, task)
 }
 
-func FindTasks(c *gin.Context) {
+func FindAllTasks(c *gin.Context) {
 	var tasks []model.Task
 	database.DB.Find(&tasks)
 	c.JSON(http.StatusOK, tasks)
@@ -39,7 +40,6 @@ func FindTaskById(c *gin.Context) {
 	var task model.Task
 	id := c.Params.ByName("id")
 	database.DB.First(&task, id)
-
 	if task.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"massage": "task not found",
@@ -62,7 +62,7 @@ func PutTaskById(c *gin.Context) {
 		return
 	}
 
-	if err := model.VaidationTask(&task); err != nil {
+	if err := service.ValidationTask(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
 		})
@@ -76,7 +76,6 @@ func PutTaskById(c *gin.Context) {
 func DeleteById(c *gin.Context) {
 	var task model.Task
 	id := c.Params.ByName("id")
-
 	database.DB.First(&task, id)
 	database.DB.Delete(&task)
 	c.JSON(http.StatusOK, task)

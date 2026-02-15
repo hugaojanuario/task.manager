@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"path"
 	"strconv"
 	"testing"
 
@@ -41,8 +40,7 @@ func TestFindAllTasks(t *testing.T) {
 	CreatedMockTask()
 	defer DeleteMockTask()
 	r := SetupTest()
-	r.GET("/task", controllers.FindTasks)
-
+	r.GET("/task", controllers.FindAllTasks)
 	req, _ := http.NewRequest("GET", "/task", nil)
 	resp := httptest.NewRecorder()
 	r.ServeHTTP(resp, req)
@@ -56,7 +54,6 @@ func TestFindTaskByIdHandler(t *testing.T) {
 	defer DeleteMockTask()
 	r := SetupTest()
 	r.GET("/task/:id", controllers.FindTaskById)
-
 	path := "/task/" + strconv.Itoa(ID)
 	req, _ := http.NewRequest("GET", path, nil)
 	resp := httptest.NewRecorder()
@@ -72,8 +69,7 @@ func TestDeleteByIdHandler(t *testing.T) {
 	CreatedMockTask()
 	DeleteMockTask()
 	r := SetupTest()
-	r.DELETE("task/:id", controllers.DeleteById)
-
+	r.DELETE("/task/:id", controllers.DeleteById)
 	path := "/task/" + strconv.Itoa(ID)
 	req, _ := http.NewRequest("DELETE", path, nil)
 	resp := httptest.NewRecorder()
@@ -81,7 +77,7 @@ func TestDeleteByIdHandler(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.Code)
 }
 
-func TestPutByIdHandler(t * testing.T){
+func TestPutByIdHandler(t *testing.T) {
 	database.ConectingOnDatabase()
 	CreatedMockTask()
 	defer DeleteMockTask()
@@ -92,7 +88,7 @@ func TestPutByIdHandler(t * testing.T){
 	path := "/task/" + strconv.Itoa(ID)
 	req, _ := http.NewRequest("PUT", path, bytes.NewBuffer(taskInJson))
 	resp := httptest.NewRecorder()
-	r. ServeHTTP(resp, req)
+	r.ServeHTTP(resp, req)
 	var taskMock model.Task
 	json.Unmarshal(resp.Body.Bytes(), &taskMock)
 	assert.Equal(t, "tasktest", taskMock.Title)

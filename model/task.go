@@ -1,7 +1,6 @@
 package model
 
 import (
-	"gopkg.in/validator.v2"
 	"gorm.io/gorm"
 )
 
@@ -13,10 +12,3 @@ type Task struct {
 }
 
 var Tasks []Task
-
-func VaidationTask(t *Task) error{
-	if err := validator.Validate(&t); err != nil {
-		return err
-	}
-	return nil
-}
