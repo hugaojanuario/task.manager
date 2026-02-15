@@ -19,7 +19,7 @@ func CreatedTask(c *gin.Context) {
 	}
 
 	if err := service.ValidationTask(&task); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": err,
 		})
 		return
@@ -63,7 +63,7 @@ func PutTaskById(c *gin.Context) {
 	}
 
 	if err := service.ValidationTask(&task); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": err,
 		})
 		return
