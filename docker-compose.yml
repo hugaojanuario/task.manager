@@ -1,4 +1,6 @@
-version: "3.8"
+# @ViitoJooj
+# não precisa colocar o versions no docker
+# version: "3.8"
 
 services:
   postgres:
