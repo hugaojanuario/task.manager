@@ -7,5 +7,6 @@ import (
 
 func main() {
 	database.ConectingOnDatabase()
+	database.CreateTable()
 	routes.HandlerRequest()
 }

@@ -26,7 +26,9 @@ func SetupTest() *gin.Engine {
 
 func CreatedMockTask() {
 	task := domain.Task{Title: "tasktest", Description: "this task is one test"}
+
 	database.DB.Create(&task)
+
 	ID = int(task.ID)
 }
 
